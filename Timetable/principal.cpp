@@ -236,7 +236,7 @@ void Principal::run(Turma turma[], int numeroTurma, char *resultado){
     int numeroProf = Constantes::getNumeroProf();
     int numeroDisc = Constantes::getNumeroDisc();
     double wt[numeroProf][2]; // vetor omega de turmas e de horas, onde 0 é o nivel de feromonios e 1 é a posição em que ela estava inicialmente
-    double wh[nh][2], wh2[nh][2];
+    double wh[nh][2], wh2[nh-1][2];
     int turmaAlocada = 0, iatual=0; // controle de quantas turmas ja foram alocadas e o indice de interações atualmente
     int numtentativasT = 0, numtentativasH = 0;// vezes em que se tentou criar uma solução
     int maxDiag = 0; // controle para a matriz imaginaria passar sempre na diagonal
@@ -262,7 +262,7 @@ void Principal::run(Turma turma[], int numeroTurma, char *resultado){
     while(iatual<imax){ // inicia o loop principal
         for(int g=0;g<na;g++){ // constroi e gera as soluções
             while(turmaAlocada < numeroTurma){ //enquanto há turmas sem professor ele acha um professor para ela
-                for(int i=0;i<numeroProf;i++){ // copiar para o vetor wh todos os professores posiveis para determinada disciplina, fazendo com que passe disciplina por disciplina para achar um professor correspondente
+                for(int i=0;i<numeroProf;i++){ // copiar para o vetor wt todos os professores posiveis para determinada disciplina, fazendo com que passe disciplina por disciplina para achar um professor correspondente
                     wt[i][0] = formigas[g].getFeromoniosT(i,turmaAlocada);
                     wt[i][1] = i;
                 }
@@ -270,6 +270,7 @@ void Principal::run(Turma turma[], int numeroTurma, char *resultado){
                 operacoes::getNextPermItemT(wt, numtentativasT, numeroProf); // usa o nextPermItem para ordenar o vetor de uma forma randomica
 
                 if(disciplina[turma[turmaAlocada].indDisc].horarioFixo==false){
+
                     for(int i=0;i<nh;i++){ // irá buscar todas os horarios possiveis do professor em que o nextPermItem retornou e tentar achar um horario para ele
                         wh[i][0] = formigas[g].getFeromoniosH(wt[numtentativasT][1],i);
                         wh[i][1] = i;
@@ -278,12 +279,21 @@ void Principal::run(Turma turma[], int numeroTurma, char *resultado){
                     operacoes::getNextPermItemH(wh, numtentativasH, nh); // usa o nextPermItem para retornar um horario adequado
 
                     if(disciplina[turma[((int)wt[numtentativasT][1])].indDisc].qtdCreditos==4){
+
+                        int horaNaoAlocada = 0; //variavel de controle para excluir a hora ja alocada para aquela disciplina
                         for(int i=0;i<nh;i++){ // irá buscar todas os horarios possiveis do professor em que o nextPermItem retornou e tentar achar um horario para ele
-                            wh2[i][0] = Ant::getFeromoniosH(wt[numtentativasT][1],i);
-                            wh2[i][1] = i;
+                            if(wh[numtentativasH][1] != i){
+                                wh2[horaNaoAlocada][0] = Ant::getFeromoniosH(wt[numtentativasT][1],i);
+                                wh2[horaNaoAlocada][1] = i;
+
+                                horaNaoAlocada++;
+                            }
+                            //else
+                                //cout<<wh[numtentativasH][1]<<" aaa  "<<wh2[i][1]<<endl;
+//                            cout<<wh[numtentativasH][1]<<"    "<< wh[i][1] <<"     "<< wh2[horaNaoAlocada][1]<<endl;
                         }
 
-                        operacoes::getNextPermItemH2(wh2, numtentativasH, nh, static_cast<int>(wh[numtentativasH][1])); // usa o nextPermItem para retornar um horario adequado
+                        operacoes::getNextPermItemH2(wh2, numtentativasH, nh-1); // usa o nextPermItem para retornar um horario adequado
                     }
 
                     else{
@@ -296,6 +306,8 @@ void Principal::run(Turma turma[], int numeroTurma, char *resultado){
                         formigas[g].setSolucao((((int)wh[numtentativasH][1])), turmaAlocada, 1);
                         formigas[g].setSolucao((((int)wh2[numtentativasH][1])), turmaAlocada, 2);
                         formigas[g].setSolucao(turma[turmaAlocada].indDisc, turmaAlocada, 3);
+
+                        //cout<<wh[numtentativasH][1]<<"       "<<wh2[numtentativasH][1]<<endl;
                         for(int i=0;i<Principal::turmasUtilizadas.size();i++){
                             Turma t = turmasUtilizadas.at(i);
                             if((turma[turmaAlocada].disc == t.disc)&&(turma[turmaAlocada].codigo[0] == t.codigo[0])&&(turma[turmaAlocada].codigo[1] == t.codigo[1])&&(turma[turmaAlocada].codigo[2] == t.codigo[2])){

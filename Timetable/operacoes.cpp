@@ -129,7 +129,7 @@ void operacoes::getNextPermItemH(double w[][2], int j, int tamanhoVetor){
 }
 
 
-void operacoes::getNextPermItemH2(double w[][2], int j, int tamanhoVetor, int horario){
+void operacoes::getNextPermItemH2(double w[][2], int j, int tamanhoVetor){
     
     double o=0, rnd=0, m;
     int q;
@@ -157,21 +157,6 @@ void operacoes::getNextPermItemH2(double w[][2], int j, int tamanhoVetor, int ho
             }
 
             posH2++;
-        }
-    }
-
-    for(int k=0;k<tamanhoVetor;k++){
-        if(w[k][1]==horario){
-            for(int n = k; n<tamanhoVetor-1; n++){
-                double pos1 = w[n][0];
-                double pos2 = w[n][1];
-                w[n][0] = w[n+1][0];
-                w[n][1] = w[n+1][1];
-                w[n][0] = pos1;
-                w[n][1] = pos2;
-
-            }
-            break;
         }
     }
 }

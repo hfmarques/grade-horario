@@ -19,7 +19,7 @@ class operacoes
         static int convert(char *str);
         static void getNextPermItemT(double w[][2], int j, int tamanhoVetor);
         static void getNextPermItemH(double w[][2], int j, int tamanhoVetor);
-        static void getNextPermItemH2(double w[][2], int j, int tamanhoVetor, int horario);
+        static void getNextPermItemH2(double w[][2], int j, int tamanhoVetor);
         static bool validasolucao(Ant ant, Professor prof, int horario, int horario2, int nt); // verifica se um professor está dando duas aulas no mesmo horario
         static double classificaHC(Ant ant, Professor *prof, Disciplina *disc, int nt, int np);
         static double classificaSC(Ant ant, Professor *prof, int nt, int np);
